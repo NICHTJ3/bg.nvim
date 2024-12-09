@@ -6,9 +6,11 @@ if tty:find("not a tty") then
 	return
 end
 
+local TMUX_TTY = '$(tmux display-message -p "#{client_tty}")'
+
 local reset = function()
 	if os.getenv("TMUX") then
-		os.execute('printf "\\ePtmux;\\e\\033]111\\007\\e\\\\"')
+		os.execute('printf "\\ePtmux;\\e\\033]111\\007\\e\\\\" >' .. TMUX_TTY)
 	elseif os.getenv("TERM") == "xterm-kitty" then
 		os.execute('printf "\\033]30101\\007" > ' .. tty)
 	else
@@ -32,8 +34,8 @@ local update = function()
 	end
 
 	if os.getenv("TMUX") then
-		os.execute('printf "\\ePtmux;\\e\\033]11;' .. bghex .. '\\007\\e\\\\"')
-		os.execute('printf "\\ePtmux;\\e\\033]12;' .. fghex .. '\\007\\e\\\\"')
+		os.execute('printf "\\ePtmux;\\e\\033]11;' .. bghex .. '\\007\\e\\\\" > ' .. TMUX_TTY)
+		os.execute('printf "\\ePtmux;\\e\\033]12;' .. fghex .. '\\007\\e\\\\" > ' .. TMUX_TTY)
 	else
 		os.execute('printf "\\033]11;' .. bghex .. '\\007" > ' .. tty)
 		os.execute('printf "\\033]12;' .. fghex .. '\\007" > ' .. tty)
